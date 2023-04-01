@@ -96,6 +96,7 @@ impl StringFinder {
                     self.count_end(c);
                 }
                 '\\' => {
+                    self.buffer.push(c);
                     self.ignoring = true;
                 }
                 _ => self.buffer.push(c),

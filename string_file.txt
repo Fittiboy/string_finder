@@ -1,0 +1,6 @@
+This file has "a bunch of strings." Those "strings" are denoted by \" (without the \ of course) surrounding them.
+If there is a backslash in front of a double quote inside a string "like \" this" for example, the string is not terminated!
+Strings could also be surrounded by any matching number of double quotes, \""""like this triple quoted one!"""
+Note that there is an escaped double quote at the beginning, which should "not count towards the total.
+Multi-line strings" should also work!
+Of course, you can put any smaller number of quotes in a """triple-double quoted string ""Like this"" too!"""

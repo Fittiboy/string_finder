@@ -33,6 +33,12 @@ impl<'a> Iterator for StringFinder<'a> {
     }
 }
 
+impl<'a> From<Chars<'a>> for StringFinder<'a> {
+    fn from(chars: Chars<'a>) -> Self {
+        Self::from(chars)
+    }
+}
+
 impl<'a> StringFinder<'a> {
     pub fn from(chars: Chars<'a>) -> Self {
         Self {

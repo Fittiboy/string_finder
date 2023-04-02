@@ -2,7 +2,7 @@ use core::str::Chars;
 
 pub struct StringFinder<'a> {
     state: State,
-    line: Chars<'a>,
+    chars: Chars<'a>,
     ignoring: bool,
     running_count: u32,
     target_count: u32,
@@ -22,7 +22,7 @@ impl<'a> Iterator for StringFinder<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         while self.result.is_empty() {
-            match self.line.next() {
+            match self.chars.next() {
                 Some(c) => self.process_char(c),
                 None => return None,
             }
@@ -34,10 +34,10 @@ impl<'a> Iterator for StringFinder<'a> {
 }
 
 impl<'a> StringFinder<'a> {
-    pub fn from(line: Chars<'a>) -> Self {
+    pub fn from(chars: Chars<'a>) -> Self {
         Self {
             state: State::Searching,
-            line,
+            chars,
             ignoring: false,
             running_count: 0,
             target_count: 0,
@@ -128,64 +128,64 @@ mod tests {
 
     #[test]
     fn simple_string() {
-        let line = r#"This is a "test" string!"#.chars();
+        let chars = r#"This is a "test" string!"#.chars();
         assert_eq!(
             vec!["test"],
-            StringFinder::from(line).collect::<Vec<String>>()
+            StringFinder::from(chars).collect::<Vec<String>>()
         );
     }
 
     #[test]
     fn multiple_strings_per_line() {
-        let line = r#"This "is" a "test" string!"#.chars();
+        let chars = r#"This "is" a "test" string!"#.chars();
         assert_eq!(
             vec!["is", "test"],
-            StringFinder::from(line).collect::<Vec<String>>()
+            StringFinder::from(chars).collect::<Vec<String>>()
         );
     }
 
     #[test]
     fn escaped_quotes_before_string() {
-        let line = r#"This \" is a "test""#.chars();
+        let chars = r#"This \" is a "test""#.chars();
         assert_eq!(
             vec!["test"],
-            StringFinder::from(line).collect::<Vec<String>>()
+            StringFinder::from(chars).collect::<Vec<String>>()
         );
     }
 
     #[test]
     fn escaped_quotes_inside_string() {
-        let line = r#"This is a "huge \"test\"""#.chars();
+        let chars = r#"This is a "huge \"test\"""#.chars();
         assert_eq!(
             vec![r#"huge \"test\""#],
-            StringFinder::from(line).collect::<Vec<String>>()
+            StringFinder::from(chars).collect::<Vec<String>>()
         );
     }
 
     #[test]
     fn tripe_quote_string() {
-        let line = r#"This is a """triple "super" test""""#.chars();
+        let chars = r#"This is a """triple "super" test""""#.chars();
         assert_eq!(
             vec![r#"triple "super" test"#],
-            StringFinder::from(line).collect::<Vec<String>>()
+            StringFinder::from(chars).collect::<Vec<String>>()
         );
     }
 
     #[test]
     fn leading_escaped_string() {
-        let line = r#"There is a little \"trick "going on" here"#.chars();
+        let chars = r#"There is a little \"trick "going on" here"#.chars();
         assert_eq!(
             vec!["going on"],
-            StringFinder::from(line).collect::<Vec<String>>()
+            StringFinder::from(chars).collect::<Vec<String>>()
         );
     }
 
     #[test]
     fn multi_line_string() {
-        let line = "There's a \"multi\nline\" string in this one!".chars();
+        let chars = "There's a \"multi\nline\" string in this one!".chars();
         assert_eq!(
             vec!["multi\nline"],
-            StringFinder::from(line).collect::<Vec<String>>()
+            StringFinder::from(chars).collect::<Vec<String>>()
         );
     }
 

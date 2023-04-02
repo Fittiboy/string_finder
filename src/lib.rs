@@ -13,7 +13,7 @@ pub struct StringFinder<'a> {
 enum State {
     Searching,
     CountingStart,
-    Adding,
+    InsideString,
     CountingEnd,
 }
 
@@ -50,7 +50,7 @@ impl<'a> StringFinder<'a> {
         match self.state {
             State::Searching => self.search(c),
             State::CountingStart => self.count_start(c),
-            State::Adding => self.add(c),
+            State::InsideString => self.inside_string(c),
             State::CountingEnd => self.count_end(c),
         }
     }
@@ -75,13 +75,13 @@ impl<'a> StringFinder<'a> {
             '"' => self.running_count += 1,
             _ => {
                 self.target_count = self.running_count;
-                self.state = State::Adding;
-                self.add(c);
+                self.state = State::InsideString;
+                self.inside_string(c);
             }
         }
     }
 
-    fn add(&mut self, c: char) {
+    fn inside_string(&mut self, c: char) {
         if self.ignoring {
             self.buffer.push(c.clone());
             self.ignoring = false;
@@ -115,8 +115,8 @@ impl<'a> StringFinder<'a> {
                     self.buffer.push('"');
                 }
                 self.running_count = self.target_count;
-                self.state = State::Adding;
-                self.add(c);
+                self.state = State::InsideString;
+                self.inside_string(c);
             }
         }
     }

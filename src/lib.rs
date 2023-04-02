@@ -21,14 +21,15 @@ impl<'a> Iterator for StringFinder<'a> {
     type Item = String;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.result = String::new();
         while self.result.is_empty() {
             match self.line.next() {
                 Some(c) => self.process_char(c),
                 None => return None,
             }
         }
-        Some(self.result.clone())
+        let mut result = String::new();
+        std::mem::swap(&mut result, &mut self.result);
+        Some(result)
     }
 }
 

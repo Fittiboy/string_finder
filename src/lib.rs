@@ -6,7 +6,7 @@ pub struct StringFinder<'a> {
     ignoring: bool,
     running_count: u32,
     target_count: u32,
-    buffer: Vec<char>,
+    buffer: String,
     result: String,
 }
 
@@ -41,7 +41,7 @@ impl<'a> StringFinder<'a> {
             ignoring: false,
             running_count: 0,
             target_count: 0,
-            buffer: Vec::new(),
+            buffer: String::new(),
             result: String::new(),
         }
     }
@@ -106,8 +106,7 @@ impl<'a> StringFinder<'a> {
                 self.running_count -= 1;
                 if self.running_count == 0 {
                     self.target_count = 0;
-                    self.result = self.buffer.iter().collect();
-                    self.buffer = Vec::new();
+                    std::mem::swap(&mut self.buffer, &mut self.result);
                     self.state = State::Searching;
                 }
             }

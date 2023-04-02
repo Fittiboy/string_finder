@@ -14,11 +14,12 @@ fn strings_from_lines(lines: Vec<String>) -> std::vec::IntoIter<String> {
 }
 
 fn strings_from_line(line: String) -> std::vec::IntoIter<String> {
-    StringFinder::new().find(line)
+    StringFinder::new(&line).find()
 }
 
-struct StringFinder {
+struct StringFinder<'a> {
     state: State,
+    line: &'a str,
     ignoring: bool,
     running_count: u32,
     target_count: u32,
@@ -33,10 +34,11 @@ enum State {
     CountingEnd,
 }
 
-impl StringFinder {
-    fn new() -> Self {
+impl<'a> StringFinder<'a> {
+    fn new(line: &'a str) -> Self {
         Self {
             state: State::Searching,
+            line,
             ignoring: false,
             running_count: 0,
             target_count: 0,
@@ -45,8 +47,8 @@ impl StringFinder {
         }
     }
 
-    fn find(mut self, line: String) -> std::vec::IntoIter<String> {
-        line.chars().for_each(|c| self.process_char(c));
+    fn find(mut self) -> std::vec::IntoIter<String> {
+        self.line.chars().for_each(|c| self.process_char(c));
         self.result.into_iter()
     }
 
@@ -171,7 +173,7 @@ mod tests {
     fn escaped_quotes_inside_string() {
         let line = r#"This is a "huge \"test\"""#.into();
         assert_eq!(
-            vec![r#"huge "test""#],
+            vec![r#"huge \"test\""#],
             strings_from_line(line).collect::<Vec<String>>()
         );
     }

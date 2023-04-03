@@ -22,14 +22,14 @@ pub trait Strings<T>
 where
     T: Iterator<Item = char>,
 {
-    fn words(self) -> StringFinder<T>;
+    fn strings(self) -> StringFinder<T>;
 }
 
 impl<T> Strings<T> for T
 where
     T: Iterator<Item = char>,
 {
-    fn words(self) -> StringFinder<T> {
+    fn strings(self) -> StringFinder<T> {
         StringFinder::from(self)
     }
 }

@@ -11,5 +11,5 @@ fn stdin_lines() -> impl Iterator<Item = String> {
     stdin()
         .lines()
         .flat_map(|line| line.unwrap().chars().collect::<Vec<_>>())
-        .words()
+        .strings()
 }

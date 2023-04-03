@@ -1,8 +1,9 @@
-use core::str::Chars;
-
-pub struct StringFinder<'a> {
+pub struct StringFinder<T>
+where
+    T: Iterator<Item = char>,
+{
     state: State,
-    chars: Chars<'a>,
+    chars: T,
     ignoring: bool,
     running_count: u32,
     target_count: u32,
@@ -17,7 +18,26 @@ enum State {
     CountingEnd,
 }
 
-impl<'a> Iterator for StringFinder<'a> {
+pub trait Strings<T>
+where
+    T: Iterator<Item = char>,
+{
+    fn words(self) -> StringFinder<T>;
+}
+
+impl<T> Strings<T> for T
+where
+    T: Iterator<Item = char>,
+{
+    fn words(self) -> StringFinder<T> {
+        StringFinder::from(self)
+    }
+}
+
+impl<T> Iterator for StringFinder<T>
+where
+    T: Iterator<Item = char>,
+{
     type Item = String;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -33,14 +53,20 @@ impl<'a> Iterator for StringFinder<'a> {
     }
 }
 
-impl<'a> From<Chars<'a>> for StringFinder<'a> {
-    fn from(chars: Chars<'a>) -> Self {
+impl<T> From<T> for StringFinder<T>
+where
+    T: Iterator<Item = char>,
+{
+    fn from(chars: T) -> Self {
         Self::from(chars)
     }
 }
 
-impl<'a> StringFinder<'a> {
-    pub fn from(chars: Chars<'a>) -> Self {
+impl<T> StringFinder<T>
+where
+    T: Iterator<Item = char>,
+{
+    pub fn from(chars: T) -> Self {
         Self {
             state: State::Searching,
             chars,
@@ -89,7 +115,7 @@ impl<'a> StringFinder<'a> {
 
     fn inside_string(&mut self, c: char) {
         if self.ignoring {
-            self.buffer.push(c.clone());
+            self.buffer.push(c);
             self.ignoring = false;
         } else {
             match c {
@@ -98,10 +124,10 @@ impl<'a> StringFinder<'a> {
                     self.count_end(c);
                 }
                 '\\' => {
-                    self.buffer.push(c.clone());
+                    self.buffer.push(c);
                     self.ignoring = true;
                 }
-                _ => self.buffer.push(c.clone()),
+                _ => self.buffer.push(c),
             }
         }
     }

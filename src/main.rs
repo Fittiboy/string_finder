@@ -1,18 +1,15 @@
-use std::io::{self, stdin};
-use string_finder::StringFinder;
+use std::io::stdin;
+use string_finder::Strings;
 
 fn main() {
-    let lines = stdin_lines();
-    let strings: StringFinder = lines.chars().into();
-    for string in strings {
+    for string in stdin_lines() {
         println!("{}\n", string);
     }
 }
 
-fn stdin_lines() -> String {
+fn stdin_lines() -> impl Iterator<Item = String> {
     stdin()
         .lines()
-        .collect::<Result<Vec<String>, io::Error>>()
-        .unwrap()
-        .join("\n")
+        .flat_map(|line| line.unwrap().chars().collect::<Vec<_>>())
+        .words()
 }

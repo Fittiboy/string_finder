@@ -10,6 +10,10 @@ fn main() {
 fn stdin_lines() -> impl Iterator<Item = String> {
     stdin()
         .lines()
-        .flat_map(|line| line.unwrap().chars().collect::<Vec<_>>())
+        .flat_map(|line| {
+            let mut chars = line.unwrap().chars().collect::<Vec<_>>();
+            chars.push('\n');
+            chars
+        })
         .strings()
 }

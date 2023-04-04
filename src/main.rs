@@ -3,7 +3,7 @@ use string_finder::Strings;
 
 fn main() {
     for string in stdin_lines() {
-        println!("{}\n", string);
+        println!("{}", string);
     }
 }
 

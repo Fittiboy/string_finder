@@ -106,9 +106,13 @@ where
         match c {
             '"' => self.running_count += 1,
             _ => {
-                self.target_count = self.running_count;
-                self.state = State::InsideString;
-                self.inside_string(c);
+                if self.running_count % 2 != 0 {
+                    self.target_count = self.running_count;
+                    self.state = State::InsideString;
+                    self.inside_string(c);
+                } else {
+                    self.running_count = 0;
+                }
             }
         }
     }
@@ -226,12 +230,12 @@ mod tests {
         let lines: String = vec![
             r#"This is a "simple" one!"#.to_string(),
             r#"This is a \""tougher" one!"#.to_string(),
-            r#"There are """triple quotes""" in ""this"" one!"#.to_string(),
+            r#"There are """triple "" quotes""" in ""this"" one!"#.to_string(),
             "There is a \"multi\nline\" string in this one!".to_string(),
         ]
         .join("\n");
         assert_eq!(
-            vec!["simple", "tougher", "triple quotes", "this", "multi\nline"],
+            vec!["simple", "tougher", "triple \"\" quotes", "multi\nline"],
             StringFinder::from(lines.chars()).collect::<Vec<String>>()
         );
     }

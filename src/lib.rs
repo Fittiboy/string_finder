@@ -112,6 +112,7 @@ where
                     self.inside_string(c);
                 } else {
                     self.running_count = 0;
+                    self.state = State::Searching;
                 }
             }
         }
@@ -229,7 +230,7 @@ mod tests {
     fn multiple_lines() {
         let lines: String = vec![
             r#"This is a "simple" one!"#.to_string(),
-            r#"This is a \""tougher" one!"#.to_string(),
+            r#"This """""" is a \""tougher" one!"#.to_string(),
             r#"There are """triple "" quotes""" in ""this"" one!"#.to_string(),
             "There is a \"multi\nline\" string in this one!".to_string(),
         ]
